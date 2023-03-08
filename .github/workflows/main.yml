@@ -2,7 +2,7 @@ name: Keycard System Main Pipeline
 
 env:
   GITHUB_REGISTRY: "ghcr.io"
-  GITHUB_OWNER: "TeoLundgren"
+  GITHUB_OWNER: "teolundgren"
   GITHUB_DOCKER_IMAGE: "keycard-system"
 
 on:
