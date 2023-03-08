@@ -1,0 +1,34 @@
+name: Keycard System Main Pipeline
+
+env:
+  GITHUB_REGISTRY: "ghcr.io"
+  GITHUB_OWNER: "TeoLundgren"
+  GITHUB_DOCKER_IMAGE: "KeycardSystem"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-docker:
+    name: Build Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: benjlevesque/short-sha@v1.2
+
+      - name: Log into registry ghcr.io
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PASS }} 
+
+      - name: Build Docker
+        run: |
+          docker build --no-cache -t $GITHUB_REGISTRY/$GITHUB_OWNER/$GITHUB_DOCKER_IMAGE:${{ env.SHA }} .
+      - name: Publish Docker
+        run: |
+          docker push $GITHUB_REGISTRY/$GITHUB_OWNER/$GITHUB_DOCKER_IMAGE:${{ env.SHA }}

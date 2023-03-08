@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "localhost",
+            "database": "${workspaceFolder:passersystem-backend}/users.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "doors",
+            "database": "${workspaceFolder:passersystem-backend}/doors.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NTI Johanneberg</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link href="/style/style.css" rel="stylesheet"/>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="nav-wrapper container">
+            <!-- <h1 style="color: #ffffff;">NTI Johanneberg Passersystem</h1> -->
+            <img src="https://mb.cision.com/Public/2355/202171/88da816719467bbb_org.jpg"class="img-fluid" width="20%" height="20%" >
+            <nav>
+                <!-- <a class="link-nav" href="" target="_blank"></a> -->
+                <!-- <a class="link-nav" href="https://{{ domain_name }}/api/docs" target="_blank">Docs</a>
+                    <a class="link-nav" href="https://github.com/kryptokrona/hugin-api" target="_blank">Github</a> -->
+                    <a class="link-nav" href="/logout">Log out</a>
+                </nav>
+            </div>
+        </header>
+        <main>
+            <h2>Users in database</h2>
+            <div class="container ">
+                <div class="custom-card">
+                    <form target="adduseriframe" name="sortby" id="sortbyform">Sort by:
+                        <input type="radio" id="lastname" name="sortby" value="lastname" checked>
+                        <label for="html">lastname</label>
+                        <input type="radio" id="firstname" name="sortby" value="firstname">
+                        <label for="css">firstname</label>
+                        <input type="radio" id="id" name="sortby" value="id">
+                        <label for="javascript">id</label>
+                        <input type="submit" value="submit">
+                    </form>
+                    <div class="card-body table-responsive fixed-table-body" style="max-height: 800px; overflow-y: auto;">
+                        <table class="table" style="width: 100%;">
+                            <h3 id="loading">loading data....</h3>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>ID</th>
+                                    <th>Decimal ID</th>
+                                    <th>Admin</th>
+                                    <th>Perms</th>
+                                    <th>Commands</th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody>
+                                <tbody id="users">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- <h3 style="text-align: center;">Add a user</h3>
+                <iframe name="adduseriframe" id="adduseriframe" style="display: none;"></iframe>
+                <form id="adduser" action="http://localhost:3000/adduser" target="adduseriframe" style="text-align: center;">
+                    <input type="hidden" name="admin" id="adminid" value="">
+                    <input type="text" name="id" placeholder="User ID (hex)">
+                    <input type="text" name="idDec" placeholder="User ID (dec)">
+                    <input type="text" name="firstname" placeholder="User firstname"><br>
+                    <input type="text" name="lastname" placeholder="User lastname">
+                    <input type="text" name="perms" placeholder="User permissions"><br>
+                    <input type="text" name="isAdmin" placeholder="Is the user an admin? 0/1">
+                    <input type="password" name="PIN" placeholder="PIN"><br>
+                    <input class="submit-button" type="button" onclick="addUser()" value="Submit">
+                </form> -->
+                 <h3 style="text-align: center;">Add a temporary permission</h3>
+                <iframe name="addtemppermiframe" id="addtemppermframe" style="display: none;"></iframe>
+                <form id="adduser" action="http://localhost:3000/addTempPerms" target="addtemppermiframe" style="text-align: center;">
+                    <input type="hidden" name="admin" id="adminid" value="">
+                    <input type="hidden" name="to" id="to" value="">
+                    <input type="hidden" name="from" id="from" value="">
+                    <input type="text" name="id" placeholder="User ID (hex)">
+                    <input type="text" name="perm" placeholder="User permission"><br>
+                    <input type="datetime-local" name="from-date" id="from-date" placeholder="From">
+                    <input type="datetime-local" name="to-date" id="to-date" placeholder="To"><br>
+                    <input class="submit-button" type="button" onclick="addTempPerm()" value="Submit">
+                </form>
+                <div class="container">
+                    <h2 class="text-center mt-4 mb-4">Add users from xslx file</h2>
+                    <div style="width: 25%; margin: auto;" class="card">
+                        <div  style="text-align: center;" class="card-header"><b>Select Excel File</b></div>
+                        <div  class="card-body">
+                            
+                            <input type="file" id="excel_file" />
+                            
+                        </div>
+                    </div>
+                    <div id="excel_data" class="mt-5"></div>
+                </div>
+                <h2>Doors in database</h2>
+                <div class="container ">
+                    <div class="custom-card">
+                        <div class="card-body table-responsive fixed-table-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>ID</th>
+                                        <th>MAC</th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    <tbody id="doors">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 style="text-align: center;">Add a door</h3>
+                    <iframe name="adddooriframe" id="adduseriframe" style="display: none;"></iframe>
+                    <form id="adddoor" action="http://localhost:3000/addDoor" target="adddooriframe" style="text-align: center;">
+                        <input type="text" name="admin" placeholder="Admin ID">
+                        <input type="text" name="MAC" placeholder="MAC address of reader">
+                        <input type="text" name="name" placeholder="Name of door"><br>
+                        <input class="submit-button" type="button" onclick="addDoor()" value="Submit">
+                    </form>
+                </main>
+                <script>
+                    function sleep(milliseconds) {  
+                        return new Promise(resolve => setTimeout(resolve, milliseconds));  
+                    }  
+                    const excel_file = document.getElementById('excel_file');
+                    
+                    excel_file.addEventListener('change', async (event) => {
+                        async function getUserId() {
+                                return new Promise((resolve, reject) => {
+                                    fetch(`http://localhost:3000/sessionid`)
+                                    .then((response) => {
+                                        return response.json()
+                                    })
+                                    .then((json) => {
+                                        userid = json.userid
+                                        resolve(userid)
+                                    })
+                                })
+                            }
+                        var userid = await getUserId()
+                        var userid = await getUserId()
+                        
+                        console.log(userid)
+
+                        
+                        if(!['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'].includes(event.target.files[0].type))
+                        {
+                            document.getElementById('excel_data').innerHTML = '<div class="alert alert-danger">Only .xlsx or .xls file format are allowed</div>';
+                            
+                            excel_file.value = '';
+                            
+                            return false;
+                        }
+                        
+                        var reader = new FileReader();
+                        
+                        reader.readAsArrayBuffer(event.target.files[0]);
+                        
+                        reader.onload = async function(event){
+                            
+                            var data = new Uint8Array(reader.result);
+                            
+                            var work_book = XLSX.read(data, {type:'array'});
+                            
+                            var sheet_name = work_book.SheetNames;
+                            
+                            var sheet_data = XLSX.utils.sheet_to_json(work_book.Sheets[sheet_name[0]], {header:1});
+                            
+                            if(sheet_data.length > 0)
+                            {
+                                for(var row = 1; row < sheet_data.length; row++)
+                                {
+                                    if(sheet_data[row][1]) {
+                                        var firstname = sheet_data[row][0]
+                                        var lastname = sheet_data[row][1]
+                                        var perms = sheet_data[row][2]
+                                        var isAdmin = sheet_data[row][3]
+                                        var id = sheet_data[row][4]
+                                        var idDec = sheet_data[row][5]
+                                        var PIN = sheet_data[row][6]
+                                        console.log(firstname + lastname + perms + isAdmin + id + idDec)
+                                        
+                                        fetch(`http://localhost:3000/adduser?admin=${userid}&id=${id}&idDec=${idDec}&firstname=${firstname}&lastname=${lastname}&perms=${perms}&isAdmin=${isAdmin}&PIN=${PIN}`)
+                                        .then((response) => {
+                                            return response.json()
+                                        })
+                                    }
+                                    await sleep(100)
+                                }
+                                
+                                
+                            }
+                            
+                            excel_file.value = '';
+                            window.location.href = "/dashboard";
+                            
+                        }
+                    });
+                    
+                    
+                    async function addUser() {
+                        async function getUserId() {
+                                return new Promise((resolve, reject) => {
+                                    fetch(`http://localhost:3000/sessionid`)
+                                    .then((response) => {
+                                        return response.json()
+                                    })
+                                    .then((json) => {
+                                        userid = json.userid
+                                        resolve(userid)
+                                    })
+                                })
+                            }
+                        var userid = await getUserId()
+                        document.getElementById("adminid").value = userid
+                        document.getElementById("adduser").submit();
+                        getUsers()
+                    }
+                    async function addTempPerm() {
+                        async function getUserId() {
+                                return new Promise((resolve, reject) => {
+                                    fetch(`http://localhost:3000/sessionid`)
+                                    .then((response) => {
+                                        return response.json()
+                                    })
+                                    .then((json) => {
+                                        userid = json.userid
+                                        resolve(userid)
+                                    })
+                                })
+                            }
+                        var userid = await getUserId()
+                        document.getElementById("adminid").value = userid
+                        const to = new Date(document.getElementById("to-date").value).valueOf() / 1000
+                        const from =  new Date(document.getElementById("from-date").value).valueOf() / 1000
+                        console.log(to + " " + from)
+                        document.getElementById("to").value = to
+                        document.getElementById("from").value = from
+                        document.getElementById("adduser").submit();
+
+                        
+                        window.location.href = "/dashboard";
+                    }
+                    function addDoor() {
+                        document.getElementById("adddoor").submit();
+                        getDoors()
+                    }
+                    function getData(form) {
+                        var formData = new FormData(form);
+                        
+                        // iterate through entries...
+                        for (var pair of formData.entries()) {
+                            getUsers(pair[1])
+                        }
+                        
+                    }
+                    
+                    document.getElementById("sortbyform").addEventListener("submit", function (e) {
+                        e.preventDefault();
+                        getData(e.target);
+                    });
+                    
+                    function getDate(timestamp) {
+                        var date = new Date(timestamp);
+                        var year = date.getFullYear();
+                        var month = ("0" + (date.getMonth() + 1)).substr(-2);
+                        var day = ("0" + date.getDate()).substr(-2);
+                        
+                        
+                        return year + "-" + month + "-" + day ;
+                    }
+                    function getTime(timestamp) {
+                        var date = new Date(timestamp);
+                        
+                        var hour = ("0" + date.getHours()).substr(-2);
+                        var minutes = ("0" + date.getMinutes()).substr(-2);
+                        var seconds = ("0" + date.getSeconds()).substr(-2);
+                        
+                        return hour + ":" + minutes + ":" + seconds;
+                    }
+                    async function getUsers(sortby) {
+                        async function getUserId() {
+                            fetch(`http://localhost:3000/sessionid`)
+                            .then((response) => {
+                                return response.json()
+                            })
+                            .then((json) => {
+                                userid = json.userid
+                                return userid
+                            })
+                        }
+                        var userid = await getUserId()
+                        await sleep(500)
+                        document.getElementById("loading").innerHTML = "Loading data...";
+                        if(!sortby || sortby == "{}") {
+                            sortby = "lastname"
+                        }
+                        fetch(`http://localhost:3000/getUsers?admin=${userid}&sortby=${sortby}`)
+                        .then((response) => {
+                            console.log(response)
+                            return response.json()
+                        })
+                        .then((json) => {
+                            var temp = "";
+                            
+                            json.data.forEach(item => {
+                                let username = item.firstname + " " + item.lastname
+                                let id = item.id
+                                let idDec = item.idDec
+                                let admin = item.admin
+                                if(admin == 1) {
+                                    admin = true
+                                } else {
+                                    admin = false
+                                }
+                                let permsission = item.perms
+                                let perms = JSON.parse(permsission)
+                                if(admin) {
+                                    perms = "All"
+                                } else {
+                                    perms = perms.doors
+                                }
+                                const dateObject = new Date(item.time * 1000)
+
+                                let createKeyCard=`<a href="http://localhost:3000/createKeyCard?admin=${userid}&id=${id}">keycard</a>`
+                                let deleteUser=`<a href="http://localhost:3000/deleteUser?admin=${userid}&id=${id}" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>`
+                                
+                                
+                                
+                                async function populateTable() {
+                                    temp += "<tr>";
+                                        temp += '<td class="col-md-3" style="word-break: break-all;">' + username + "</td>";
+                                        temp += '<td class="col-md-3" style="word-break: break-all;">' + id + "</td>";
+                                        temp += '<td class="col-md-3" style="word-break: break-all;">' + idDec + "</td>";
+                                        temp += '<td class="col-md-3" style="word-break: break-all;">' + admin + "</td>";
+                                        temp += '<td class="col-md-3" style="word-break: break-all;">' + perms + "</td>";
+                                        temp += '<td class="col-md-3" style="word-break: break-all;">' + createKeyCard + "<br>" + deleteUser + "</td>";
+                                        document.getElementById('users').innerHTML = temp;
+                                        document.getElementById("loading").innerHTML = "";
+                                    }
+                                    
+                                    setTimeout(() => {
+                                        populateTable()
+                                    }, 75)
+                                })
+                            })
+                        }
+                        async function unlock(did, MAC, userId) {
+                            return new Promise((resolve, reject) => {
+                                fetch(`http://localhost:3000/api?id=${userId}&did=${did}&MAC=${MAC}`)
+                                .then((response) => {
+                                    return response.json()
+                                })
+                                .then((json) => {
+                                    status = json.status
+                                    resolve(status)
+                                })
+                                
+                            })
+                        }
+                        async function getDoors() {
+                            async function getUserId() {
+                                return new Promise((resolve, reject) => {
+                                    fetch(`http://localhost:3000/sessionid`)
+                                    .then((response) => {
+                                        return response.json()
+                                    })
+                                    .then((json) => {
+                                        userid = json.userid
+                                        resolve(userid)
+                                    })
+                                })
+                            }
+                            var userid = await getUserId()
+                            fetch(`http://localhost:3000/getDoors?admin=${userid}`)
+                            .then((response) => {
+                                console.log(response)
+                                return response.json()
+                            })
+                            .then(async (json) => {
+                                var temp = "";
+                                
+                                json.data.forEach( async item => {
+                                    let id = item.id
+                                    let name = item.name
+                                    let MAC = item.MAC
+                                    let userId = await getUserId()
+                                    const dateObject = new Date(item.time * 1000)
+                                    
+                                    
+                                    
+                                    async function populateTable() {
+                                        temp += "<tr>";
+                                            temp += '<td class="col-md-3" style="word-break: break-all;">' + name + "</td>";
+                                            temp += '<td class="col-md-3" style="word-break: break-all;">' + id + "</td>";
+                                            temp += '<td class="col-md-3" style="word-break: break-all;">' + MAC + "</td>";
+                                            
+                                            document.getElementById('doors').innerHTML = temp;
+                                        }
+                                        
+                                        setTimeout(() => {
+                                            populateTable()
+                                        }, 75)
+                                    })
+                                })
+                            }
+                            getUsers()
+                            getDoors()
+                        </script>
+                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+                        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+                        crossorigin="anonymous"></script>
+                    </body>
+                    </html>
